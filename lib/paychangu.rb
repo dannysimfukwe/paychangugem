@@ -11,9 +11,10 @@ module Paychangu
     payment_url = URI("https://api.paychangu.com/").freeze
     supported_currencies =  ['MWK', 'NGN', 'ZAR', 'GBP', 'USD', 'ZMW'].freeze
 
-    def initialize(secret_key)
+    def initialize(secret_key, supported_currencies, payment_url)
       @secret = set_secret(secret_key)
       @url = payment_url
+      @supported_currencies = supported_currencies
     end
 
     def create_payment_link(data = {})
@@ -53,7 +54,7 @@ module Paychangu
     end
 
     def get_supported_currencies(currency) 
-      raise "currency list not provided!" unless supported_currencies.include?(currency)
+      raise "currency list not provided!" unless @supported_currencies.include?(currency)
 
       currency
     end
