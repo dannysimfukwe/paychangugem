@@ -52,7 +52,7 @@ module Paychangu
     end
 
     def get_supported_currencies(currency) 
-      raise "currency list not provided!" unless @supported_currencies.include?(currency)
+      raise "#{currency} currency not supported!" unless @supported_currencies.include?(currency)
 
       currency
     end
