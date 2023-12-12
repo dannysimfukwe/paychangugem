@@ -12,18 +12,18 @@ module Paychangu
     supported_currencies =  ['MWK', 'NGN', 'ZAR', 'GBP', 'USD', 'ZMW'].freeze
 
     def initialize(secret_key)
-      @secret = setSecret(secret_key)
+      @secret = set_secret(secret_key)
       @url = payment_url
     end
 
-    def createPaymentLink(data = {})
+    def create_payment_link(data = {})
       path = "payment"
       http = Net::HTTP.new(@url.host, @url.port)
       http.use_ssl = true
 
       payload = {
         :amount => data[:amount],
-        :currency => getSupportedCurrencies(data[:currency]),
+        :currency => get_supported_currencies(data[:currency]),
         :email => data[:email],
         :first_name => data[:first_name],
         :last_name => data[:last_name],
@@ -47,12 +47,12 @@ module Paychangu
       response.read_body
     end
 
-    def setSecret(secret_key)
+    def set_secret(secret_key)
       raise "Secret key not provided!" unless secret_key
       secret_key
     end
 
-    def getSupportedCurrencies(currency) 
+    def get_supported_currencies(currency) 
       raise "currency list not provided!" unless supported_currencies.include?(currency)
 
       currency
