@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    Paychangu (0.2.2)
+    Paychangu (0.2.3)
 
 GEM
   remote: https://rubygems.org/
