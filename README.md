@@ -71,6 +71,28 @@ card_payload = {
 
   `withdraw = paychangu.withdraw_card_funds(fund_card_payload)`
 
+  #### Buying Airtime
+
+  First get all operators
+
+  ```
+   operators = paychangu.airtime_operators
+
+  ```
+
+  Then Use the operator's ID to buy Airtime
+
+  ```
+    airtime_payment_payload = {
+        operator: "123",
+        amount: "300",
+        phone: "0900000000",
+        callback_url: "https://webhook.site/9d0b00ba-9a69-44fa-a43d-a82c33c36fdc"
+    }
+
+    paychangu.airtime_payment(airtime_payment_payload)
+  ```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
