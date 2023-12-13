@@ -1,4 +1,4 @@
-# Paychangu
+# Paychangu Rails Gem
 
 ## Installation
 
@@ -18,7 +18,8 @@ Start by initializing the gem with your Paychangu secret key, you can get this k
 
 #### Creating a payment link
 
- `payload = {
+```
+ payload = {
         amount: "50000",
         currency: "MWK",
         email: "test@example.com",
@@ -30,28 +31,33 @@ Start by initializing the gem with your Paychangu secret key, you can get this k
         title: "Title of payment",
         description: "Description of payment",
         logo: "https://assets.piedpiper.com/logo.png"
-    }`
+    }
+```
 
  `link = paychangu.create_payment_link(payload)`
 
  #### Creating a virtual card
 
-`card_payload = {
+```
+card_payload = {
         amount: "500",
         currency: "USD",
         first_name: "Danny",
         last_name: "Simfukwe",
         callback_url: "https://webhook.site/9d0b00ba-9a69-44fa-a43d-a82c33c36fdc"
-    }`
+    }
+```
 
 `card = paychangu.create_virtual_card(card_payload)`
 
  #### Funding a Virtual Card
 
- `fund_card_payload = {
+```
+ fund_card_payload = {
       amount: "50000",
       card_hash: card[:card_hash],
-    }`
+    }
+```
 
  `paychangu.fund_card(fund_card_payload)`
 
@@ -67,7 +73,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/paychangu.
+Bug reports and pull requests are welcome on GitHub at https://github.com/dannysimfukwe/paychangu.
 
 ## License
 
