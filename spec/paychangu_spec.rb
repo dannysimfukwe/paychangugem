@@ -5,7 +5,7 @@ RSpec.describe Paychangu do
     expect(Paychangu::VERSION).not_to be nil
   end
 
-  xit "does something useful" do
+  xit "raises an error if a wrong currency is passed to it" do
    
   end
 end

@@ -21,7 +21,7 @@ module Paychangu
     def create_payment_link(data = {})
       path = "payment"
 
-      payload = link_payload(data)
+      payload = create_link_payload(data)
 
       process_request(payload, path)
     end
@@ -29,7 +29,15 @@ module Paychangu
     def create_virtual_card(data = {})
       path = "virtual_card/create"
 
-      payload = card_payload(data)
+      payload = create_card_payload(data)
+
+      process_request(payload, path)
+    end
+
+    def fund_card(data = {})
+      path = "virtual_card/fund"
+
+      payload = fund_card_payload(data)
 
       process_request(payload, path)
     end
@@ -54,7 +62,7 @@ module Paychangu
       currency
     end
 
-    def link_payload(data)
+    def create_link_payload(data)
       {
         amount: data[:amount],
         currency: get_supported_currencies(data[:currency]),
@@ -72,13 +80,20 @@ module Paychangu
       }.to_json
     end
 
-    def card_payload(data)
+    def create_card_payload(data)
       {
         amount: data[:amount],
         currency: get_card_supported_currencies(data[:currency]),
         first_name: data[:first_name],
         last_name: data[:last_name],
         callback_url: data[:callback_url]
+      }.to_json
+    end
+
+    def fund_card_payload(data)
+      {
+        amount: data[:amount],
+        card_hash: data[:card_hash]
       }.to_json
     end
 
