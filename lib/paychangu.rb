@@ -1,8 +1,8 @@
 # frozen_string_literal: true
-require 'uri'
-require 'json'
-require 'net/http'
-require 'securerandom'
+require "uri"
+require "json"
+require "net/http"
+require "securerandom"
 
 require_relative "paychangu/version"
 
@@ -12,7 +12,7 @@ module Paychangu
     def initialize(secret_key)
       @secret = set_secret(secret_key)
       @url = URI("https://api.paychangu.com/").freeze
-      @supported_currencies =  ['MWK', 'NGN', 'ZAR', 'GBP', 'USD', 'ZMW'].freeze
+      @supported_currencies =  %w[MWK NGN ZAR GBP USD ZMW].freeze
     end
 
     def create_payment_link(data = {})
@@ -21,23 +21,23 @@ module Paychangu
       http.use_ssl = true
 
       payload = {
-        :amount => data[:amount],
-        :currency => get_supported_currencies(data[:currency]),
-        :email => data[:email],
-        :first_name => data[:first_name],
-        :last_name => data[:last_name],
-        :callback_url => data[:callback_url],
-        :return_url => data[:return_url],
-        :tx_ref => data[:tx_ref] || SecureRandom.hex(10),
-        :customization => {
-            :title => data[:title],
-            :description => data[:description]
+        amount: data[:amount],
+        currency: get_supported_currencies(data[:currency]),
+        email: data[:email],
+        first_name: data[:first_name],
+        last_name: data[:last_name],
+        callback_url: data[:callback_url],
+        return_url: data[:return_url],
+        tx_ref: data[:tx_ref] || SecureRandom.hex(10),
+        customization: {
+            title: data[:title],
+            description: data[:description]
             },
-        :logo => data[:logo]
+        logo: data[:logo]
     }.to_json
 
       request = Net::HTTP::Post.new(@url + "/#{path}")
-      request["accept"] = 'application/json'
+      request["accept"] = "application/json"
       request["Authorization"] =  "Bearer #{@secret}"
       request["content-type"] = 'application/json'
       request.body = payload
@@ -48,6 +48,7 @@ module Paychangu
 
     def set_secret(secret_key)
       raise "Secret key not provided!" unless secret_key
+
       secret_key
     end
 
