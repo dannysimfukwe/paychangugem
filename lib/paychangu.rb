@@ -118,7 +118,7 @@ module Paychangu
       http = Net::HTTP.new(API_URL.host, API_URL.port)
       http.use_ssl = true
 
-      request = Net::HTTP::Post.new("#{API_URL}/#{path}")
+      request = Net::HTTP::Post.new("#{API_URL}#{path}")
       request["accept"] = "application/json"
       request["Authorization"] = "Bearer #{@secret}"
       request["content-type"] = "application/json"
