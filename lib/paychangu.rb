@@ -42,6 +42,14 @@ module Paychangu
       process_request(payload, path)
     end
 
+    def withdraw_card_funds(data = {})
+      path = "virtual_card/withdraw"
+
+      payload = withdraw_card_funds_payload(data)
+
+      process_request(payload, path)
+    end
+
     private
 
     def paychangu_secret(secret_key)
@@ -91,6 +99,13 @@ module Paychangu
     end
 
     def fund_card_payload(data)
+      {
+        amount: data[:amount],
+        card_hash: data[:card_hash]
+      }.to_json
+    end
+
+    def withdraw_card_funds_payload(data)
       {
         amount: data[:amount],
         card_hash: data[:card_hash]
