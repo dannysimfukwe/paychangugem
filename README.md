@@ -1,24 +1,38 @@
 # Paychangu
 
-TODO: Delete this and the text below, and describe your gem
-
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/paychangu`. To experiment with that code, run `bin/console` for an interactive prompt.
-
 ## Installation
-
-TODO: Replace `UPDATE_WITH_YOUR_GEM_NAME_PRIOR_TO_RELEASE_TO_RUBYGEMS_ORG` with your gem name right after releasing it to RubyGems.org. Please do not do it earlier due to security reasons. Alternatively, replace this section with instructions to install your gem from git if you don't plan to release to RubyGems.org.
 
 Install the gem and add to the application's Gemfile by executing:
 
-    $ bundle add UPDATE_WITH_YOUR_GEM_NAME_PRIOR_TO_RELEASE_TO_RUBYGEMS_ORG
+    $ bundle add paychangu
 
 If bundler is not being used to manage dependencies, install the gem by executing:
 
-    $ gem install UPDATE_WITH_YOUR_GEM_NAME_PRIOR_TO_RELEASE_TO_RUBYGEMS_ORG
+    $ gem install paychangu
 
 ## Usage
 
-TODO: Write usage instructions here
+Start by initializing the gem with you Paychangu secret key, you can get this key in your paychangu account settings
+
+`paychangu = Paychangu::Payment.new("sec-test-SDsYTCSh...")`
+
+### Create a payment link
+
+ ```payload = {
+        amount: "50000",
+        currency: "MWK",
+        email: "test@example.com",
+        first_name: "Danny",
+        last_name: "Simfukwe",
+        callback_url: "https://webhook.site/9d0b00ba-9a69-44fa-a43d-a82c33c36fdc",
+        return_url: "https://webhook.site",
+        tx_ref: SecureRandom.hex(10),
+        title: "Title of payment",
+        description: "Description of payment",
+        logo: "https://assets.piedpiper.com/logo.png"
+    }```
+
+`link = paychangu.create_payment_link(payload)`
 
 ## Development
 
