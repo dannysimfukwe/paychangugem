@@ -13,11 +13,21 @@ module Paychangu
     API_URL = URI("https://api.paychangu.com/").freeze
     SUPPORTED_CURRENCIES = %w[MWK NGN ZAR GBP USD ZMW].freeze
     SUPPORTED_CARD_CURRENCIES = %w[USD].freeze
+
     API_ENDPOINTS = {
       payment: "payment",
       create_card: "virtual_card/create",
       fund_card: "virtual_card/fund",
-      withdraw: "virtual_card/withdraw"
+      withdraw: "virtual_card/withdraw",
+      get_operators: "bill_payment/get-operators",
+      airtime_payment: "bill_payment/create"
+    }.freeze
+
+    REQUEST_METHODS = {
+      post: "POST",
+      get: "GET",
+      puts: "PUT",
+      delete: "DELETE"
     }.freeze
 
     def initialize(secret_key)
@@ -27,25 +37,29 @@ module Paychangu
     def create_payment_link(data = {})
       payload = create_link_payload(data)
 
-      process_request(payload, API_ENDPOINTS[:payment])
+      process_request(payload, API_ENDPOINTS[:payment], REQUEST_METHODS[:post])
     end
 
     def create_virtual_card(data = {})
       payload = create_card_payload(data)
 
-      process_request(payload, API_ENDPOINTS[:create_card])
+      process_request(payload, API_ENDPOINTS[:create_card], REQUEST_METHODS[:post])
     end
 
     def fund_card(data = {})
       payload = fund_card_payload(data)
 
-      process_request(payload, API_ENDPOINTS[:fund_card])
+      process_request(payload, API_ENDPOINTS[:fund_card], REQUEST_METHODS[:post])
     end
 
     def withdraw_card_funds(data = {})
       payload = withdraw_card_funds_payload(data)
 
-      process_request(payload, API_ENDPOINTS[:withdraw])
+      process_request(payload, API_ENDPOINTS[:withdraw], REQUEST_METHODS[:post])
+    end
+
+    def airtime_operators
+      process_request(nil, API_ENDPOINTS[:get_operators], REQUEST_METHODS[:get])
     end
 
     private
@@ -114,15 +128,23 @@ module Paychangu
       }
     end
 
-    def process_request(payload, path)
+    def process_request(payload, path, method)
       http = Net::HTTP.new(API_URL.host, API_URL.port)
       http.use_ssl = true
 
-      request = Net::HTTP::Post.new("#{API_URL}#{path}")
-      request["accept"] = "application/json"
-      request["Authorization"] = "Bearer #{@secret}"
-      request["content-type"] = "application/json"
-      request.body = payload
+      case method
+      when "POST"
+        request = Net::HTTP::Post.new("#{API_URL}#{path}")
+        request["accept"] = "application/json"
+        request["Authorization"] = "Bearer #{@secret}"
+        request["content-type"] = "application/json"
+        request.body = payload
+      when "GET"
+        request = Net::HTTP::Get.new("#{API_URL}#{path}")
+        request["accept"] = "application/json"
+        request["Authorization"] = "Bearer #{@secret}"
+        request["content-type"] = "application/json"
+      end
 
       response = http.request(request)
       JSON.parse(response.body)
