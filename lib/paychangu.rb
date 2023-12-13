@@ -79,7 +79,7 @@ module Paychangu
         first_name: data[:first_name],
         last_name: data[:last_name],
         callback_url: data[:callback_url]
-      }
+      }.to_json
     end
 
     def process_request(payload, path)
