@@ -40,14 +40,14 @@ module Paychangu
       secret_key
     end
 
-    def get_supported_currencies(currency) 
+    def get_supported_currencies(currency)
       raise "#{currency} currency not supported!" unless @supported_currencies.include?(currency)
 
       currency
     end
 
     def link_payload(data)
-      payload = {
+      {
         amount: data[:amount],
         currency: get_supported_currencies(data[:currency]),
         email: data[:email],
@@ -57,8 +57,8 @@ module Paychangu
         return_url: data[:return_url],
         tx_ref: data[:tx_ref] || SecureRandom.hex(10),
         customization: {
-            title: data[:title],
-            description: data[:description]
+              title: data[:title],
+              description: data[:description]
             },
         logo: data[:logo]
       }.to_json
