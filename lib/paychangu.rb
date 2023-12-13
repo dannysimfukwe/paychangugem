@@ -9,9 +9,10 @@ require_relative "paychangu/version"
 
 module Paychangu
   class Payment
+    # We need to provide the Paychangu secret key
 
     def initialize(secret_key)
-      @secret = set_secret(secret_key)
+      @secret = paychangu_secret(secret_key)
       @url = URI("https://api.paychangu.com/").freeze
       @supported_currencies = %w[MWK NGN ZAR GBP USD ZMW].freeze
     end
@@ -21,19 +22,19 @@ module Paychangu
       http = Net::HTTP.new(@url.host, @url.port)
       http.use_ssl = true
 
-      payload = set_payload(data)
-      
+      payload = link_payload(data)
+
       request = Net::HTTP::Post.new(@url + "/#{path}")
       request["accept"] = "application/json"
-      request["Authorization"] =  "Bearer #{@secret}"
-      request["content-type"] = 'application/json'
+      request["Authorization"] = "Bearer #{@secret}"
+      request["content-type"] = "application/json"
       request.body = payload
 
       response = http.request(request)
       response.read_body
     end
 
-    def set_secret(secret_key)
+    def paychangu_secret(secret_key)
       raise "Secret key not provided!" unless secret_key
 
       secret_key
@@ -45,7 +46,7 @@ module Paychangu
       currency
     end
 
-    def set_payload(data)
+    def link_payload(data)
       payload = {
         amount: data[:amount],
         currency: get_supported_currencies(data[:currency]),
@@ -61,8 +62,6 @@ module Paychangu
             },
         logo: data[:logo]
       }.to_json
-
-      payload
     end
   end
 end
