@@ -26,7 +26,7 @@ module Paychangu
     REQUEST_METHODS = {
       post: "POST",
       get: "GET",
-      puts: "PUT",
+      put: "PUT",
       delete: "DELETE"
     }.freeze
 
@@ -60,6 +60,12 @@ module Paychangu
 
     def airtime_operators
       process_request(nil, API_ENDPOINTS[:get_operators], REQUEST_METHODS[:get])
+    end
+
+    def airtime_payment(data = {})
+      payload = create_airtime_payment_payload(data)
+
+      process_request(payload, API_ENDPOINTS[:airtime_payment], REQUEST_METHODS[:post])
     end
 
     private
@@ -128,6 +134,15 @@ module Paychangu
       }
     end
 
+    def create_airtime_payment_payload(data)
+      {
+        operator: data[:operator],
+        amount: data[:amount],
+        phone: data[:phone],
+        callback_url: data[:callback_url]
+      }.to_json
+    end
+
     def process_request(payload, path, method)
       http = Net::HTTP.new(API_URL.host, API_URL.port)
       http.use_ssl = true
@@ -144,6 +159,18 @@ module Paychangu
         request["accept"] = "application/json"
         request["Authorization"] = "Bearer #{@secret}"
         request["content-type"] = "application/json"
+      when "PUT"
+        request = Net::HTTP::Put.new("#{API_URL}#{path}")
+        request["accept"] = "application/json"
+        request["Authorization"] = "Bearer #{@secret}"
+        request["content-type"] = "application/json"
+        request.body = payload
+      when "DELETE"
+        request = Net::HTTP::Delete.new("#{API_URL}#{path}")
+        request["accept"] = "application/json"
+        request["Authorization"] = "Bearer #{@secret}"
+        request["content-type"] = "application/json"
+        request.body = payload
       end
 
       response = http.request(request)
