@@ -93,7 +93,7 @@ module Paychangu
       request.body = payload
 
       response = http.request(request)
-      response.read_body
+      JSON.parse(response.body)
     end
   end
 end
