@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.email = ["dannysimfukwe@gmail.com"]
 
   spec.summary = "Gem::Paychangu"
-  spec.description = "PayChangu Ruby Gem."
+  spec.description = "PayChangu Rails Gem."
   spec.homepage = "https://github.com/dannysimfukwe/paychangugem"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 2.6.0"

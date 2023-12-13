@@ -22,7 +22,7 @@ Then use it in your application like below with your Paychangu secret key, you c
 
 `paychangu = Paychangu::Payment.new("sec-test-SDsYTCSh...")`
 
-#### Creating a payment link
+#### Creating a Payment Link
 
 ```
  payload = {
@@ -42,7 +42,7 @@ Then use it in your application like below with your Paychangu secret key, you c
 
  `link = paychangu.create_payment_link(payload)`
 
- #### Creating a virtual card
+ #### Creating a Virtual Card
 
 ```
 card_payload = {
