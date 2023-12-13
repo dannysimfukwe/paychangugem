@@ -80,7 +80,7 @@ card_payload = {
 
   ```
 
-  Then Use the operator's ID to buy Airtime
+  Then use the operator's ID to buy Airtime
 
   ```
     airtime_payment_payload = {
