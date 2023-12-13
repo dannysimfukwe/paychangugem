@@ -59,8 +59,8 @@ module Paychangu
         return_url: data[:return_url],
         tx_ref: data[:tx_ref] || SecureRandom.hex(10),
         customization: {
-            title: data[:title],
-            description: data[:description]
+          title: data[:title],
+          description: data[:description]
         },
         logo: data[:logo]
       }.to_json
