@@ -8,46 +8,44 @@ require "securerandom"
 require_relative "paychangu/version"
 
 module Paychangu
+  # Main Payemnt Class
   class Payment
-    # We need to provide the Paychangu secret key
+    API_URL = URI("https://api.paychangu.com/").freeze
+    SUPPORTED_CURRENCIES = %w[MWK NGN ZAR GBP USD ZMW].freeze
+    SUPPORTED_CARD_CURRENCIES = %w[USD].freeze
+    API_ENDPOINTS = {
+      payment: "payment",
+      create_card: "virtual_card/create",
+      fund_card: "virtual_card/fund",
+      withdraw: "virtual_card/withdraw"
+    }.freeze
 
     def initialize(secret_key)
       @secret = paychangu_secret(secret_key)
-      @url = URI("https://api.paychangu.com/").freeze
-      @supported_currencies = %w[MWK NGN ZAR GBP USD ZMW].freeze
-      @card_currencies = %w[USD].freeze
     end
 
     def create_payment_link(data = {})
-      path = "payment"
-
       payload = create_link_payload(data)
 
-      process_request(payload, path)
+      process_request(payload, API_ENDPOINTS[:payment])
     end
 
     def create_virtual_card(data = {})
-      path = "virtual_card/create"
-
       payload = create_card_payload(data)
 
-      process_request(payload, path)
+      process_request(payload, API_ENDPOINTS[:create_card])
     end
 
     def fund_card(data = {})
-      path = "virtual_card/fund"
-
       payload = fund_card_payload(data)
 
-      process_request(payload, path)
+      process_request(payload, API_ENDPOINTS[:fund_card])
     end
 
     def withdraw_card_funds(data = {})
-      path = "virtual_card/withdraw"
-
       payload = withdraw_card_funds_payload(data)
 
-      process_request(payload, path)
+      process_request(payload, API_ENDPOINTS[:withdraw])
     end
 
     private
@@ -59,13 +57,13 @@ module Paychangu
     end
 
     def get_supported_currencies(currency)
-      raise "#{currency} currency not supported!" unless @supported_currencies.include?(currency)
+      raise "#{currency} currency not supported!" unless SUPPORTED_CURRENCIES.include?(currency)
 
       currency
     end
 
     def get_card_supported_currencies(currency)
-      raise "#{currency} currency not supported" unless @card_currencies.include?(currency)
+      raise "#{currency} currency not supported" unless SUPPORTED_CARD_CURRENCIES.include?(currency)
 
       currency
     end
@@ -80,10 +78,7 @@ module Paychangu
         callback_url: data[:callback_url],
         return_url: data[:return_url],
         tx_ref: data[:tx_ref] || SecureRandom.hex(10),
-        customization: {
-          title: data[:title],
-          description: data[:description]
-        },
+        customization: customization(data),
         logo: data[:logo]
       }.to_json
     end
@@ -112,11 +107,18 @@ module Paychangu
       }.to_json
     end
 
+    def customization(data)
+      {
+        title: data[:title],
+        description: data[:description]
+      }
+    end
+
     def process_request(payload, path)
-      http = Net::HTTP.new(@url.host, @url.port)
+      http = Net::HTTP.new(API_URL.host, API_URL.port)
       http.use_ssl = true
 
-      request = Net::HTTP::Post.new(@url + "/#{path}")
+      request = Net::HTTP::Post.new("#{API_URL}/#{path}")
       request["accept"] = "application/json"
       request["Authorization"] = "Bearer #{@secret}"
       request["content-type"] = "application/json"
