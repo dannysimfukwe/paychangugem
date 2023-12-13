@@ -12,7 +12,13 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
 ## Usage
 
-Start by initializing the gem with your Paychangu secret key, you can get this key in your paychangu account settings
+Create an initializer in your application's `config > initializers` folder, for example `paychangu.rb` and paste the following
+
+```
+require "paychangu"
+```
+
+Then use it in your application like below with your Paychangu secret key, you can get this key in your Paychangu account settings
 
 `paychangu = Paychangu::Payment.new("sec-test-SDsYTCSh...")`
 
@@ -73,7 +79,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/dannysimfukwe/paychangu.
+Bug reports and pull requests are welcome on GitHub at https://github.com/dannysimfukwe/paychangugem.
 
 ## License
 
