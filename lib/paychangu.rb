@@ -20,7 +20,8 @@ module Paychangu
       fund_card: "virtual_card/fund",
       withdraw: "virtual_card/withdraw",
       get_operators: "bill_payment/get-operators",
-      airtime_payment: "bill_payment/create"
+      airtime_payment: "bill_payment/create",
+      verify_payment: "verify-payment"
     }.freeze
 
     REQUEST_METHODS = {
@@ -66,6 +67,10 @@ module Paychangu
       payload = create_airtime_payment_payload(data)
 
       process_request(payload, API_ENDPOINTS[:airtime_payment], REQUEST_METHODS[:post])
+    end
+
+    def verify_payment(data = {})
+      process_request(nil, "#{API_ENDPOINTS[:verify_payment]}/#{data[:tx_ref]}", REQUEST_METHODS[:get])
     end
 
     private
