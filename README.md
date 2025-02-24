@@ -14,7 +14,7 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
 Create an initializer in your application's `config > initializers` folder, for example `paychangu.rb` and paste the following
 
-```
+```ruby
 require "paychangu"
 ```
 
@@ -24,7 +24,7 @@ Then use it in your application like below with your Paychangu secret key, you c
 
 #### Creating a Payment Link
 
-```
+```ruby
  payload = {
         amount: "50000",
         currency: "MWK",
