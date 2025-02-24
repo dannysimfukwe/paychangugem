@@ -4,11 +4,15 @@
 
 Install the gem and add to the application's Gemfile by executing:
 
-    $ bundle add paychangu
+```ruby
+$ bundle add paychangu
+```
 
 If bundler is not being used to manage dependencies, install the gem by executing:
 
-    $ gem install paychangu
+```ruby    
+$ gem install paychangu
+```
 
 ## Usage
 
@@ -20,7 +24,9 @@ require "paychangu"
 
 Then use it in your application like below with your Paychangu secret key, you can get this key in your Paychangu account settings
 
-`paychangu = Paychangu::Payment.new("sec-test-SDsYTCSh...")`
+```ruby
+paychangu = Paychangu::Payment.new("sec-test-SDsYTCSh...")
+```
 
 #### Creating a Payment Link
 
@@ -40,11 +46,13 @@ Then use it in your application like below with your Paychangu secret key, you c
     }
 ```
 
- `link = paychangu.create_payment_link(payload)`
+ ```ruby
+link = paychangu.create_payment_link(payload)
+```
 
  #### Creating a Virtual Card
 
-```
+```ruby
 card_payload = {
         amount: "500",
         currency: "USD",
@@ -54,35 +62,41 @@ card_payload = {
     }
 ```
 
-`card = paychangu.create_virtual_card(card_payload)`
+```ruby 
+card = paychangu.create_virtual_card(card_payload)
+```
 
  #### Funding a Virtual Card
 
-```
+```rbuy
  fund_card_payload = {
       amount: "50000",
       card_hash: card[:card_hash],
     }
 ```
 
- `paychangu.fund_card(fund_card_payload)`
+ ```ruby 
+paychangu.fund_card(fund_card_payload)
+```
 
  #### Withdrawing from a Virtual Card
 
-  `withdraw = paychangu.withdraw_card_funds(fund_card_payload)`
+  ```ruby 
+withdraw = paychangu.withdraw_card_funds(fund_card_payload)
+```
 
   #### Buying Airtime
 
   First get all operators
 
-  ```
+  ```ruby
    operators = paychangu.airtime_operators
 
   ```
 
   Then use the operator's ID to buy Airtime
 
-  ```
+  ```ruby
     airtime_payment_payload = {
         operator: "123",
         amount: "300",
