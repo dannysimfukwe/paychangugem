@@ -28,7 +28,14 @@ module Paychangu
       withdraw: "virtual_card/withdraw",
       get_operators: "bill_payment/get-operators",
       airtime_payment: "bill_payment/create",
-      verify_payment: "verify-payment"
+      verify_payment: "verify-payment",
+      direct_charge_momo: "mobilemoney",
+      direct_charge_bank: "bank-transfer",
+      get_single_charge_details: "get-single-charge-details",
+      disburse_momo: "disbursements/mobile-money",
+      disburse_bank: "disbursements/bank",
+      get_payout_operators: "disbursements/get-operators",
+      get_payout_banks: "disbursements/banks"
     }.freeze
 
     # HTTP request methods supported.
@@ -176,6 +183,172 @@ module Paychangu
       process_request(nil, "#{API_ENDPOINTS[:verify_payment]}/#{data[:tx_ref]}", REQUEST_METHODS[:get])
     end
 
+    # Initiates a direct mobile money charge.
+    #
+    # @param data [Hash] The mobile money charge data.
+    # @option data [Float, Integer] :amount The amount for the charge.
+    # @option data [String] :currency The currency code (e.g., "MWK", "USD"). See {SUPPORTED_CURRENCIES}.
+    # @option data [String] :email The customer's email address.
+    # @option data [String] :phone_number The customer's phone number.
+    # @option data [String] :network The mobile money network provider.
+    # @option data [String] :first_name The customer's first name.
+    # @option data [String] :last_name The customer's last name.
+    # @option data [String] :callback_url The URL to send a POST request to upon charge completion.
+    # @option data [String] :return_url The URL to redirect the user to after charge completion.
+    # @option data [String] :tx_ref (optional) Unique transaction reference. Auto-generated if not provided.
+    # @return [Hash] The API response containing the charge details.
+    # @raise [Paychangu::InvalidInputError] if required parameters are missing or invalid (e.g., unsupported currency).
+    # @raise [Paychangu::AuthenticationError] if authentication fails.
+    # @raise [Paychangu::APIError] for other API-related errors.
+    def direct_charge_mobile_money(data = {})
+      required_keys = %i[amount currency email phone_number network first_name last_name callback_url return_url]
+      validate_presence_of(data, required_keys)
+
+      payload = {
+        amount: data[:amount],
+        currency: get_supported_currencies(data[:currency]),
+        email: data[:email],
+        phone_number: data[:phone_number],
+        network: data[:network],
+        first_name: data[:first_name],
+        last_name: data[:last_name],
+        callback_url: data[:callback_url],
+        return_url: data[:return_url],
+        tx_ref: data[:tx_ref] || SecureRandom.hex(10)
+      }
+
+      process_request(payload, API_ENDPOINTS[:direct_charge_momo], REQUEST_METHODS[:post])
+    end
+
+    # Initiates a direct bank transfer.
+    #
+    # @param data [Hash] The bank transfer data.
+    # @option data [Float, Integer] :amount The amount for the transfer.
+    # @option data [String] :currency The currency code (e.g., "MWK", "USD"). See {SUPPORTED_CURRENCIES}.
+    # @option data [String] :email The customer's email address.
+    # @option data [String] :bank_code The customer's bank code.
+    # @option data [String] :account_number The customer's bank account number.
+    # @option data [String] :first_name The customer's first name.
+    # @option data [String] :last_name The customer's last name.
+    # @option data [String] :callback_url The URL to send a POST request to upon transfer completion.
+    # @option data [String] :return_url The URL to redirect the user to after transfer completion.
+    # @option data [String] :tx_ref (optional) Unique transaction reference. Auto-generated if not provided.
+    # @return [Hash] The API response containing the transfer details.
+    # @raise [Paychangu::InvalidInputError] if required parameters are missing or invalid (e.g., unsupported currency).
+    # @raise [Paychangu::AuthenticationError] if authentication fails.
+    # @raise [Paychangu::APIError] for other API-related errors.
+    def direct_charge_bank_transfer(data = {})
+      required_keys = %i[amount currency email bank_code account_number first_name last_name callback_url return_url]
+      validate_presence_of(data, required_keys)
+
+      payload = {
+        amount: data[:amount],
+        currency: get_supported_currencies(data[:currency]),
+        email: data[:email],
+        bank_code: data[:bank_code],
+        account_number: data[:account_number],
+        first_name: data[:first_name],
+        last_name: data[:last_name],
+        callback_url: data[:callback_url],
+        return_url: data[:return_url],
+        tx_ref: data[:tx_ref] || SecureRandom.hex(10)
+      }
+
+      process_request(payload, API_ENDPOINTS[:direct_charge_bank], REQUEST_METHODS[:post])
+    end
+
+    # Retrieves the details of a specific charge transaction.
+    #
+    # @param data [Hash] The data containing the transaction reference.
+    # @option data [String] :tx_ref The transaction reference to retrieve details for.
+    # @return [Hash] The API response containing the charge details.
+    # @raise [Paychangu::InvalidInputError] if the `tx_ref` parameter is missing.
+    # @raise [Paychangu::AuthenticationError] if authentication fails.
+    # @raise [Paychangu::APIError] for other API-related errors (e.g., if transaction not found).
+    def get_charge_details(data = {})
+      required_keys = %i[tx_ref]
+      validate_presence_of(data, required_keys)
+
+      path = "#{API_ENDPOINTS[:get_single_charge_details]}/#{data[:tx_ref]}"
+      process_request(nil, path, REQUEST_METHODS[:get])
+    end
+
+    # Retrieves the list of available mobile money operators for payouts.
+    #
+    # @return [Hash] The API response containing the list of mobile money operators.
+    # @raise [Paychangu::AuthenticationError] if authentication fails.
+    # @raise [Paychangu::APIError] for other API-related errors.
+    def get_payout_mobile_operators
+      process_request(nil, API_ENDPOINTS[:get_payout_operators], REQUEST_METHODS[:get])
+    end
+
+    # Retrieves the list of available banks for payouts.
+    #
+    # @return [Hash] The API response containing the list of banks.
+    # @raise [Paychangu::AuthenticationError] if authentication fails.
+    # @raise [Paychangu::APIError] for other API-related errors.
+    def get_payout_banks
+      process_request(nil, API_ENDPOINTS[:get_payout_banks], REQUEST_METHODS[:get])
+    end
+
+    # Disburses funds to a mobile money account.
+    #
+    # @param data [Hash] The disbursement data.
+    # @option data [Float, Integer] :amount The amount to disburse.
+    # @option data [String] :currency The currency code (e.g., "MWK", "USD"). See {SUPPORTED_CURRENCIES}.
+    # @option data [String] :phone_number The recipient's phone number.
+    # @option data [String] :network The mobile money network provider.
+    # @option data [String] :reason The reason for the disbursement.
+    # @option data [String] :reference Unique client-provided reference for the transaction.
+    # @return [Hash] The API response confirming the disbursement.
+    # @raise [Paychangu::InvalidInputError] if required parameters are missing or invalid.
+    # @raise [Paychangu::AuthenticationError] if authentication fails.
+    # @raise [Paychangu::APIError] for other API-related errors.
+    def disburse_to_mobile_money(data = {})
+      required_keys = %i[amount currency phone_number network reason reference]
+      validate_presence_of(data, required_keys)
+
+      payload = {
+        amount: data[:amount],
+        currency: get_supported_currencies(data[:currency]),
+        phone_number: data[:phone_number],
+        network: data[:network],
+        reason: data[:reason],
+        reference: data[:reference]
+      }
+      process_request(payload, API_ENDPOINTS[:disburse_momo], REQUEST_METHODS[:post])
+    end
+
+    # Disburses funds to a bank account.
+    #
+    # @param data [Hash] The disbursement data.
+    # @option data [Float, Integer] :amount The amount to disburse.
+    # @option data [String] :currency The currency code (e.g., "MWK", "USD"). See {SUPPORTED_CURRENCIES}.
+    # @option data [String] :bank_code The recipient's bank code.
+    # @option data [String] :account_number The recipient's bank account number.
+    # @option data [String] :account_name The recipient's bank account name.
+    # @option data [String] :reason The reason for the disbursement.
+    # @option data [String] :reference Unique client-provided reference for the transaction.
+    # @return [Hash] The API response confirming the disbursement.
+    # @raise [Paychangu::InvalidInputError] if required parameters are missing or invalid.
+    # @raise [Paychangu::AuthenticationError] if authentication fails.
+    # @raise [Paychangu::APIError] for other API-related errors.
+    def disburse_to_bank_account(data = {})
+      required_keys = %i[amount currency bank_code account_number account_name reason reference]
+      validate_presence_of(data, required_keys)
+
+      payload = {
+        amount: data[:amount],
+        currency: get_supported_currencies(data[:currency]),
+        bank_code: data[:bank_code],
+        account_number: data[:account_number],
+        account_name: data[:account_name],
+        reason: data[:reason],
+        reference: data[:reference]
+      }
+      process_request(payload, API_ENDPOINTS[:disburse_bank], REQUEST_METHODS[:post])
+    end
+
     private
 
     def paychangu_secret(secret_key)
@@ -203,9 +376,9 @@ module Paychangu
         callback_url: data[:callback_url],
         return_url: data[:return_url],
         tx_ref: data[:tx_ref] || SecureRandom.hex(10),
-        customization: customization(data), # customization already returns a Hash
+        customization: customization(data),
         logo: data[:logo]
-      } # Remove .to_json
+      }
     end
 
     def create_card_payload(data)
@@ -215,28 +388,28 @@ module Paychangu
         first_name: data[:first_name],
         last_name: data[:last_name],
         callback_url: data[:callback_url]
-      } # Remove .to_json
+      }
     end
 
     def fund_card_payload(data)
       {
         amount: data[:amount],
         card_hash: data[:card_hash]
-      } # Remove .to_json
+      }
     end
 
     def withdraw_card_funds_payload(data)
       {
         amount: data[:amount],
         card_hash: data[:card_hash]
-      } # Remove .to_json
+      }
     end
 
     def customization(data)
       {
         title: data[:title],
         description: data[:description]
-      } # This is fine, returns a Hash
+      }
     end
 
     def create_airtime_payment_payload(data)
@@ -245,7 +418,7 @@ module Paychangu
         amount: data[:amount],
         phone: data[:phone],
         callback_url: data[:callback_url]
-      } # Remove .to_json
+      }
     end
 
     def validate_presence_of(data, required_keys)
@@ -257,25 +430,22 @@ module Paychangu
     end
 
     def process_request(payload, path, method_verb)
-      options = { headers: {} } # Initialize options with headers hash
+      options = { headers: {} }
 
       if payload && (method_verb == REQUEST_METHODS[:post] || method_verb == REQUEST_METHODS[:put])
         options[:body] = payload.to_json
         options[:headers]['Content-Type'] = 'application/json'
       end
-      # No specific Content-Type logic for GET/DELETE here, HTTParty handles it.
 
       begin
         response = case method_verb
                    when REQUEST_METHODS[:post]
                      self.class.post("/#{path}", options)
                    when REQUEST_METHODS[:get]
-                     # If 'payload' were to contain query parameters: options[:query] = payload
                      self.class.get("/#{path}", options)
                    when REQUEST_METHODS[:put]
                      self.class.put("/#{path}", options)
                    when REQUEST_METHODS[:delete]
-                     # If 'payload' were to contain query parameters: options[:query] = payload
                      self.class.delete("/#{path}", options)
                    else
                      raise Paychangu::InvalidInputError, "Unsupported HTTP method: #{method_verb}"
@@ -290,12 +460,6 @@ module Paychangu
     def handle_response(response)
       parsed_response = response.parsed_response
       status_code = response.code
-
-      # Log request and response for debugging (optional, consider a logger)
-      # puts "PayChangu API Request: #{response.request.http_method} #{response.request.uri}"
-      # puts "PayChangu API Response Status: #{status_code}"
-      # puts "PayChangu API Response Body: #{parsed_response.inspect}"
-
 
       case status_code
       when 200..299

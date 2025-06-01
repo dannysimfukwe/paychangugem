@@ -107,6 +107,124 @@ withdraw = paychangu.withdraw_card_funds(fund_card_payload)
     paychangu.airtime_payment(airtime_payment_payload)
   ```
 
+#### Verifying a Payment/Charge
+
+To verify any transaction or get its details (Payment Links, Direct Charges):
+
+```ruby
+# tx_ref is the transaction reference you provided or was auto-generated
+charge_details_payload = {
+  tx_ref: "your_transaction_reference"
+}
+
+details = paychangu.verify_payment(charge_details_payload) # For payment links (existing)
+# OR for any charge:
+details = paychangu.get_charge_details(charge_details_payload)
+# Note: verify_payment might be specific to payment links,
+# while get_charge_details is more generic if their API differentiates.
+# Assuming get_charge_details is the new generic one for charge status.
+```
+Response will contain the status and details of the transaction.
+
+### Direct Charges
+
+These methods allow you to directly charge a customer's mobile money or bank account. Ensure you have proper authorization from your customers before using these methods.
+
+#### Direct Mobile Money Charge
+
+```ruby
+direct_momo_payload = {
+  amount: "2500", # Amount to charge
+  currency: "MWK", # Supported currency e.g MWK, NGN, ZMW, USD, GBP, ZAR
+  email: "customer@example.com", # Customer's email
+  phone_number: "0999000000", # Customer's phone number
+  network: "AIRTEL", # Mobile money network (e.g., AIRTEL, TNM, MTN_ZAMBIA)
+  first_name: "John",
+  last_name: "Doe",
+  callback_url: "https://yourdomain.com/callback", # URL for transaction status updates
+  return_url: "https://yourdomain.com/return", # URL to redirect customer after attempt
+  tx_ref: SecureRandom.hex(10) # Optional: Your unique transaction reference
+}
+
+response = paychangu.direct_charge_mobile_money(direct_momo_payload)
+# Check response for success or failure
+```
+
+#### Direct Bank Transfer Charge
+
+```ruby
+direct_bank_payload = {
+  amount: "15000", # Amount to charge
+  currency: "NGN", # Supported currency
+  email: "customer@example.com",
+  bank_code: "058", # Code for the customer's bank
+  account_number: "0123456789", # Customer's bank account number
+  first_name: "Jane",
+  last_name: "Doe",
+  callback_url: "https://yourdomain.com/callback",
+  return_url: "https://yourdomain.com/return",
+  tx_ref: SecureRandom.hex(10) # Optional
+}
+
+response = paychangu.direct_charge_bank_transfer(direct_bank_payload)
+# Check response
+```
+
+### Disbursements (Payouts)
+
+These methods allow you to send funds to mobile money accounts or bank accounts.
+
+#### Get Payout Mobile Operators
+
+Before disbursing to mobile money, you might need a list of supported operators.
+
+```ruby
+operators_list = paychangu.get_payout_mobile_operators()
+# This will return a list of available mobile money operators for payouts
+```
+
+#### Get Payout Banks
+
+Similarly, for bank disbursements, get a list of supported banks.
+
+```ruby
+banks_list = paychangu.get_payout_banks()
+# This will return a list of available banks for payouts
+```
+
+#### Disburse to Mobile Money
+
+```ruby
+disburse_momo_payload = {
+  amount: "2000", # Amount to send
+  currency: "ZMW", # Supported currency
+  phone_number: "0977123456", # Recipient's phone number
+  network: "MTN_ZAMBIA", # Recipient's mobile money network code from get_payout_mobile_operators
+  reason: "Refund for order TX123", # Reason for the disbursement
+  reference: SecureRandom.hex(12) # Your unique reference for this payout
+}
+
+response = paychangu.disburse_to_mobile_money(disburse_momo_payload)
+# Check response
+```
+
+#### Disburse to Bank Account
+
+```ruby
+disburse_bank_payload = {
+  amount: "50000", # Amount to send
+  currency: "NGN",
+  bank_code: "044", # Recipient's bank code from get_payout_banks
+  account_number: "0011223344", # Recipient's account number
+  account_name: "Recipient Name", # Recipient's account name
+  reason: "Payment for services rendered",
+  reference: SecureRandom.hex(12) # Your unique reference for this payout
+}
+
+response = paychangu.disburse_to_bank_account(disburse_bank_payload)
+# Check response
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
