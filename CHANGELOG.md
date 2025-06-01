@@ -1,4 +1,4 @@
-## [0.2.0] - YYYY-MM-DD (Replace YYYY-MM-DD with today's date upon release)
+## [0.2.0]
 
 ### Added
 - **Direct Charge Methods:**
