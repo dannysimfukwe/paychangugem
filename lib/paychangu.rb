@@ -145,7 +145,7 @@ module Paychangu
     end
 
     # Retrieves the list of available airtime operators.
-    #
+    
     # @return [Hash] The API response containing the list of operators.
     # @raise [Paychangu::AuthenticationError] if authentication fails.
     # @raise [Paychangu::APIError] for other API-related errors.
