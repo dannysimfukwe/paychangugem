@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "spec_helper"
-# require "paychangu" # spec_helper already requires it
 require 'paychangu/errors' # Required for explicit error type checking
 
 RSpec.describe Paychangu::Payment do
