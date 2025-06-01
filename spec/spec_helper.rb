@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
 require "paychangu"
+require 'webmock/rspec'
 
 RSpec.configure do |config|
+  WebMock.disable_net_connect!(allow_localhost: true)
   # Enable flags like --only-failures and --next-failure
   config.example_status_persistence_file_path = ".rspec_status"
 
