@@ -5,13 +5,13 @@
 Install the gem and add to the application's Gemfile by executing:
 
 ```ruby
-$ bundle add paychangu
+$ bundle add Paychangu
 ```
 
 If bundler is not being used to manage dependencies, install the gem by executing:
 
 ```ruby    
-$ gem install paychangu
+$ gem install Paychangu
 ```
 
 ## Usage
@@ -37,8 +37,8 @@ paychangu = Paychangu::Payment.new("sec-test-SDsYTCSh...")
         email: "test@example.com",
         first_name: "Danny",
         last_name: "Simfukwe",
-        callback_url: "https://webhook.site/9d0b00ba-9a69-44fa-a43d-a82c33c36fdc",
-        return_url: "https://webhook.site",
+        callback_url: "https://yourdomain.com/callback",
+        return_url: "https://yourdomain.com/return",
         tx_ref: SecureRandom.hex(10),
         title: "Title of payment",
         description: "Description of payment",
@@ -58,7 +58,7 @@ card_payload = {
         currency: "USD",
         first_name: "Danny",
         last_name: "Simfukwe",
-        callback_url: "https://webhook.site/9d0b00ba-9a69-44fa-a43d-a82c33c36fdc"
+        callback_url: "https://yourdomain.com/callback"
     }
 ```
 
@@ -101,7 +101,7 @@ withdraw = paychangu.withdraw_card_funds(fund_card_payload)
         operator: "123",
         amount: "300",
         phone: "0900000000",
-        callback_url: "https://webhook.site/9d0b00ba-9a69-44fa-a43d-a82c33c36fdc"
+        callback_url: "https://yourdomain.com/callback"
     }
 
     paychangu.airtime_payment(airtime_payment_payload)
